@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Case Study 3: Bertrand Competition | EconoPlay</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.plot.ly/plotly-2.20.0.min.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: #0a0a0a;
+        color: #f0f0f0;
+        line-height: 1.6;
+        padding: 40px;
+      }
+
+      h1 {
+        font-size: 2.5rem;
+        margin-bottom: 20px;
+        font-weight: 800;
+        color: #1db954; /* bright green */
+      }
+
+      .container {
+        display: flex;
+        gap: 50px;
+        justify-content: center;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        max-width: 1200px;
+        margin: auto;
+      }
+
+      .content {
+        flex: 1;
+        min-width: 300px;
+      }
+
+      .content h2 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin: 20px 0 10px;
+        color: #1db954;
+      }
+
+      .content p {
+        margin-bottom: 20px;
+        color: #cccccc;
+      }
+
+      .equation {
+        font-size: 1.1rem; /* smaller font to fit equation */
+        font-weight: 600;
+        background: #121a27; /* subtle dark-blue black */
+        border-left: 4px solid #1db954;
+        padding: 15px 20px;
+        margin: 20px 0;
+        animation: slideFadeIn 1.8s ease forwards;
+        white-space: nowrap;
+        overflow-x: auto;
+      }
+
+      @keyframes slideFadeIn {
+        0% {
+          opacity: 0;
+          transform: translateX(-40px);
+        }
+        100% {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      canvas,
+      #bertrand3D1,
+      #bertrand3D2 {
+        background-color: #121a27;
+        border-radius: 12px;
+        padding: 20px;
+        width: 100% !important;
+        height: 450px !important;
+        max-width: 600px;
+        margin-top: 20px;
+        box-shadow: inset 0 0 8px #0a7c3d66; /* subtle green inner glow */
+        transition: box-shadow 0.4s ease;
+      }
+
+      canvas:hover,
+      #bertrand3D1:hover,
+      #bertrand3D2:hover {
+        box-shadow: inset 0 0 15px #1db954aa;
+      }
+
+      .chart-container {
+        flex: 1;
+        min-width: 320px;
+        max-width: 650px;
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+        align-items: center;
+      }
+
+      .quote-box {
+        background-color: #121a27;
+        border-left: 4px solid #1db954;
+        padding: 20px;
+        margin-top: 40px;
+        font-style: italic;
+        font-size: 1.2rem;
+        color: #ddd;
+        animation: fadeIn 2s ease;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      footer {
+        margin-top: 60px;
+        text-align: center;
+        font-size: 0.9rem;
+        color: #888;
+        border-top: 1px solid #222;
+        padding-top: 20px;
+      }
+
+      footer a {
+        color: #1db954;
+        text-decoration: none;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>Case Study: Bertrand Competition – Price Wars in Telecom</h1>
+    <div class="container">
+      <div class="content">
+        <h2>Competitive Pricing Overview</h2>
+        <p>
+          The Bertrand competition model describes how firms compete by setting
+          prices rather than quantities. In telecom markets, companies often
+          engage in aggressive price competition to gain market share, leading
+          to dynamic and sometimes unstable outcomes.
+        </p>
+
+        <h2>Market Dynamics</h2>
+        <p>
+          Firms simultaneously choose prices for homogeneous products. The firm
+          with the lower price captures the entire market, forcing rivals to
+          lower their prices. This interaction often drives prices down to
+          marginal cost in equilibrium.
+        </p>
+
+        <h2>Profit Function (Firm i):</h2>
+        <div class="equation">
+          π<sub>i</sub> = (p<sub>i</sub> - c) × q<sub>i</sub>
+        </div>
+
+        <h2>Insights & Implications</h2>
+        <p>
+          Bertrand competition results in fierce price competition, sometimes
+          resulting in zero economic profits. However, product differentiation,
+          capacity constraints, or repeated interaction can soften this
+          outcome.
+        </p>
+
+        <h2>Real-World Application</h2>
+        <p>
+          Telecom firms frequently use strategic pricing, promotions, and
+          bundling to retain customers and avoid pure Bertrand outcomes. Regulatory
+          policies also impact pricing strategies.
+        </p>
+
+        <div class="quote-box">
+          "In the fierce battle of prices, Bertrand competition sharpens strategic
+          pricing instincts."
+        </div>
+      </div>
+
+      <div class="chart-container">
+        <canvas id="bertrandChart"></canvas>
+
+        <!-- 3D Graph 1 -->
+        <div id="bertrand3D1"></div>
+
+        <!-- 3D Graph 2 -->
+        <div id="bertrand3D2"></div>
+      </div>
+    </div>
+
+    <footer>
+      Built by <strong>Ronit Bhaskar</strong> ·
+      <a href="mailto:ronitbhaskar04@gmail.com">ronitbhaskar04@gmail.com</a>
+    </footer>
+
+    <script>
+      // Chart.js Line Chart - Price Trends
+      const ctxBertrand = document.getElementById('bertrandChart').getContext('2d');
+      const bertrandChart = new Chart(ctxBertrand, {
+        type: 'line',
+        data: {
+          labels: Array.from({ length: 12 }, (_, i) => `Month ${i + 1}`),
+          datasets: [
+            {
+              label: 'Firm A Price (pA)',
+              data: [100, 95, 90, 88, 85, 83, 80, 78, 77, 75, 74, 73],
+              borderColor: '#1db954',
+              backgroundColor: 'rgba(29, 185, 84, 0.3)',
+              borderWidth: 2,
+              fill: true,
+              tension: 0.25,
+            },
+            {
+              label: 'Firm B Price (pB)',
+              data: [105, 100, 92, 89, 87, 85, 83, 81, 80, 78, 77, 75],
+              borderColor: '#2775d2',
+              backgroundColor: 'rgba(39, 117, 210, 0.3)',
+              borderWidth: 2,
+              fill: true,
+              tension: 0.25,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              labels: {
+                color: '#f0f0f0',
+                font: {
+                  size: 14,
+                },
+              },
+            },
+          },
+          scales: {
+            x: {
+              ticks: {
+                color: '#f0f0f0',
+              },
+              grid: {
+                color: '#222',
+              },
+            },
+            y: {
+              ticks: {
+                color: '#f0f0f0',
+              },
+              grid: {
+                color: '#222',
+              },
+              min: 70,
+              max: 110,
+            },
+          },
+        },
+      });
+
+      // Plotly 3D Surface - Profit Landscape (Graph 1)
+      const profitData1 = {
+        type: 'surface',
+        z: [
+          [5, 6, 7, 8, 9, 8, 7],
+          [6, 7, 8, 9, 10, 9, 8],
+          [7, 8, 9, 10, 11, 10, 9],
+          [8, 9, 10, 11, 12, 11, 10],
+          [7, 8, 9, 10, 11, 10, 9],
+          [6, 7, 8, 9, 10, 9, 8],
+          [5, 6, 7, 8, 9, 8, 7],
+        ],
+        x: [70, 75, 80, 85, 90, 95, 100],
+        y: [70, 75, 80, 85, 90, 95, 100],
+        colorscale: [
+          [0, '#0a7c3d'],
+          [0.5, '#1db954'],
+          [1, '#74f08a'],
+        ],
+        contours: {
+          z: {
+            show: true,
+            usecolormap: true,
+            highlightcolor: '#1db954',
+            project: { z: true },
+          },
+        },
+        lighting: {
+          ambient: 0.6,
+          diffuse: 0.9,
+          specular: 0.1,
+          roughness: 0.8,
+          fresnel: 0.3,
+        },
+        hoverinfo: 'z',
+      };
+
+      const layout1 = {
+        title: {
+          text: 'Profit Landscape over Price Strategies',
+          font: {
+            family: 'Inter, sans-serif',
+            size: 18,
+            color: '#1db954',
+          },
+          xref: 'paper',
+          x: 0.5,
+          y: 0.9,
+        },
+        scene: {
+          xaxis: {
+            title: 'Firm A Price',
+            color: '#1db954',
+            backgroundcolor: '#0a0a0a',
+            gridcolor: '#1db95466',
+            zerolinecolor: '#1db95499',
+          },
+          yaxis: {
+            title: 'Firm B Price',
+            color: '#1db954',
+            backgroundcolor: '#0a0a0a',
+            gridcolor: '#1db95466',
+            zerolinecolor: '#1db95499',
+          },
+          zaxis: {
+            title: 'Profit',
+            color: '#1db954',
+            backgroundcolor: '#0a0a0a',
+            gridcolor: '#1db95466',
+            zerolinecolor: '#1db95499',
+          },
+          bgcolor: '#0a0a0a',
+          camera: {
+            eye: { x: 1.7, y: 1.7, z: 0.7 },
+          },
+        },
+        paper_bgcolor: '#0a0a0a',
+        font: {
+          family: 'Inter, sans-serif',
+          color: '#f0f0f0',
+        },
+        margin: { l: 0, r: 0, b: 0, t: 50 },
+      };
+
+      Plotly.newPlot('bertrand3D1', [profitData1], layout1, {
+        displayModeBar: false,
+        responsive: true,
+      });
+
+      // Plotly 3D Surface - Reaction Function (Graph 2)
+      const reactionData = {
+        type: 'surface',
+        z: [
+          [3, 4, 5, 6, 7, 6, 5],
+          [4, 5, 6, 7, 8, 7, 6],
+          [5, 6, 7, 8, 9, 8, 7],
+          [6, 7, 8, 9, 10, 9, 8],
+          [5, 6, 7, 8, 9, 8, 7],
+          [4, 5, 6, 7, 8, 7, 6],
+          [3, 4, 5, 6, 7, 6, 5],
+        ],
+        x: [70, 75, 80, 85, 90, 95, 100],
+        y: [70, 75, 80, 85, 90, 95, 100],
+        colorscale: [
+          [0, '#06466f'],
+          [0.5, '#2775d2'],
+          [1, '#74aaff'],
+        ],
+        contours: {
+          z: {
+            show: true,
+            usecolormap: true,
+            highlightcolor: '#2775d2',
+            project: { z: true },
+          },
+        },
+        lighting: {
+          ambient: 0.5,
+          diffuse: 0.7,
+          specular: 0.2,
+          roughness: 0.9,
+          fresnel: 0.25,
+        },
+        hoverinfo: 'z',
+      };
+
+      const layout2 = {
+        title: {
+          text: 'Reaction Function Surface',
+          font: {
+            family: 'Inter, sans-serif',
+            size: 18,
+            color: '#2775d2',
+          },
+          xref: 'paper',
+          x: 0.5,
+          y: 0.9,
+        },
+        scene: {
+          xaxis: {
+            title: 'Firm A Price',
+            color: '#2775d2',
+            backgroundcolor: '#0a0a0a',
+            gridcolor: '#2775d266',
+            zerolinecolor: '#2775d299',
+          },
+          yaxis: {
+            title: 'Firm B Price',
+            color: '#2775d2',
+            backgroundcolor: '#0a0a0a',
+            gridcolor: '#2775d266',
+            zerolinecolor: '#2775d299',
+          },
+          zaxis: {
+            title: 'Best Response',
+            color: '#2775d2',
+            backgroundcolor: '#0a0a0a',
+            gridcolor: '#2775d266',
+            zerolinecolor: '#2775d299',
+          },
+          bgcolor: '#0a0a0a',
+          camera: {
+            eye: { x: 1.6, y: 1.6, z: 0.8 },
+          },
+        },
+        paper_bgcolor: '#0a0a0a',
+        font: {
+          family: 'Inter, sans-serif',
+          color: '#f0f0f0',
+        },
+        margin: { l: 0, r: 0, b: 0, t: 50 },
+      };
+
+      Plotly.newPlot('bertrand3D2', [reactionData], layout2, {
+        displayModeBar: false,
+        responsive: true,
+      });
+    </script>
+  </body>
+</html>

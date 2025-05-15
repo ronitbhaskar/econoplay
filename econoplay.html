@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EconoPlay | Game Theory in Action</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      background-color: #121212;
+      color: #eeeeee;
+      line-height: 1.6;
+      scroll-behavior: smooth;
+    }
+
+    header {
+      background-color: #121212;
+      color: #2aa75f;
+      padding: 4rem 2rem;
+      text-align: center;
+      animation: fadeIn 1.5s ease;
+    }
+
+    header h1 {
+      font-size: 3rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+    }
+
+    header p {
+      font-size: 1.2rem;
+      max-width: 700px;
+      margin: 0 auto;
+      color: #cccccc;
+    }
+
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translateY(-20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 4rem 2rem;
+    }
+
+    .section {
+      margin-bottom: 4rem;
+      animation: fadeInUp 1s ease;
+    }
+
+    .section h2 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 2rem;
+      border-left: 6px solid #2aa75f;
+      padding-left: 1rem;
+      color: #2aa75f;
+    }
+
+    .section p {
+      font-size: 1.1rem;
+      margin-bottom: 2rem;
+      color: #dddddd;
+    }
+
+    @keyframes fadeInUp {
+      0% { opacity: 0; transform: translateY(40px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+    }
+
+    .card {
+      border: 1px solid #1a1a1a;
+      border-radius: 12px;
+      padding: 2rem;
+      background-color: #1e1e1e;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.3);
+    }
+
+    .card h3 {
+      font-size: 1.3rem;
+      color: #2aa75f;
+      margin-bottom: 0.5rem;
+    }
+
+    .card p {
+      font-size: 1rem;
+      color: #bbbbbb;
+    }
+
+    .card a {
+      display: inline-block;
+      margin-top: 1rem;
+      color: #2aa75f;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .card a:hover {
+      text-decoration: underline;
+    }
+
+    footer {
+      background-color: #0d0d0d;
+      padding: 2rem;
+      text-align: center;
+      font-size: 0.9rem;
+      color: #aaaaaa;
+    }
+
+    footer a {
+      color: #2aa75f;
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>EconoPlay</h1>
+    <p>Professional-grade interactive platform applying game theory to real-world economics, strategy, and competition.</p>
+  </header>
+
+  <main class="container">
+    <section class="section">
+      <h2>About EconoPlay</h2>
+      <p>EconoPlay is an interactive and research-backed learning platform that applies core concepts from game theory to analyze and simulate real-world strategic decisions in business, economics, sports, and policy-making.</p>
+      <p>Our mission is to bridge the gap between academic models and actual decision-making scenarios through immersive visuals, intuitive calculators, and compelling case studies. Whether you're a student, researcher, or decision-maker, EconoPlay offers a clear and engaging way to explore the art of strategy.</p>
+    </section>
+
+    <section class="section">
+      <h2>Featured Case Studies</h2>
+      <div class="card-grid">
+        <div class="card">
+          <h3>Cournot Duopoly – Boeing vs Airbus</h3>
+          <p>Explore output-based competition and reaction functions in a duopolistic aircraft market.</p>
+          <a href="case1.html">Read More</a>
+        </div>
+        <div class="card">
+          <h3>Stackelberg Leadership Model – Market Leader and Follower</h3>
+          <p>Analyze how the first-mover advantage changes strategic decisions between leader and follower firms.</p>
+          <a href="case2.html">Read More</a>
+        </div>
+        <div class="card">
+          <h3>Bertrand Competition – Price Wars in Telecom</h3>
+          <p>Examine how aggressive price cuts impact profits in the telecom industry under Bertrand assumptions.</p>
+          <a href="case3.html">Read More</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Interactive Models</h2>
+      <div class="card-grid">
+        <div class="card">
+          <h3>Prisoner's Dilemma Simulator</h3>
+          <p>Test cooperation vs defection strategies and visualize Nash equilibrium behavior in real time.</p>
+          <a href="#">Try It</a>
+        </div>
+        <div class="card">
+          <h3>Cournot Duopoly Calculator</h3>
+          <p>Enter your own market parameters to simulate competition in quantity-based strategic settings.</p>
+          <a href="#">Try It</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    Designed by <strong>Ronit Bhaskar</strong> &nbsp; | &nbsp;
+    <a href="mailto:ronitbhaskar04@gmail.com">ronitbhaskar04@gmail.com</a>
+  </footer>
+</body>
+</html>

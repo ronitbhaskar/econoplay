@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Stackelberg Leadership Model | EconoPlay</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.plot.ly/plotly-2.20.0.min.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #0a0a0a;
+        color: #f0f0f0;
+        line-height: 1.6;
+        padding: 40px;
+      }
+
+      h1 {
+        font-size: 2.5rem;
+        margin-bottom: 20px;
+        font-weight: 800;
+      }
+
+      .container {
+        display: flex;
+        gap: 50px;
+        justify-content: center;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        max-width: 1200px;
+        margin: auto;
+      }
+
+      .content {
+        flex: 1;
+        min-width: 300px;
+      }
+
+      .content h2 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin: 20px 0 10px;
+      }
+
+      .content p {
+        margin-bottom: 20px;
+        color: #cccccc;
+      }
+
+      .equation {
+        font-size: 1rem; /* reduced font size for fitting */
+        font-weight: 600;
+        background: #1b1b1b;
+        border-left: 4px solid #1db954;
+        padding: 15px 20px;
+        margin: 20px 0;
+        animation: fadeIn 2s ease-in-out;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      canvas,
+      #stackelberg3D {
+        background-color: #1c1c1c;
+        border-radius: 10px;
+        padding: 20px;
+        width: 100% !important;
+        height: auto !important;
+        max-width: 500px;
+        max-height: 500px;
+        margin-top: 20px;
+      }
+
+      /* Fix for 3D Plotly graph visibility */
+      #stackelberg3D {
+        width: 500px !important;
+        height: 500px !important;
+      }
+
+      .chart-container {
+        flex: 1;
+        min-width: 300px;
+        max-width: 600px;
+      }
+
+      .quote-box {
+        background-color: #1b1b1b;
+        border-left: 4px solid #1db954;
+        padding: 20px;
+        margin-top: 40px;
+        font-style: italic;
+        font-size: 1.2rem;
+        color: #ddd;
+      }
+
+      footer {
+        margin-top: 60px;
+        text-align: center;
+        font-size: 0.9rem;
+        color: #888;
+        border-top: 1px solid #222;
+        padding-top: 20px;
+      }
+
+      footer a {
+        color: #1db954;
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Case Study: Stackelberg Leadership Model – Market Leader and Follower</h1>
+    <div class="container">
+      <div class="content">
+        <h2>Model Overview</h2>
+        <p>
+          The Stackelberg model describes a strategic game where one firm (the
+          leader) moves first and the other firm (the follower) moves
+          sequentially. The leader firm commits to an output level, influencing
+          the follower’s decision.
+        </p>
+
+        <h2>Assumptions</h2>
+        <p>
+          The market demand is linear and both firms have constant marginal
+          costs. The leader firm exploits the first-mover advantage, while the
+          follower reacts optimally to the leader’s choice.
+        </p>
+
+        <h2>Leader’s Profit Equation:</h2>
+        <div class="equation">
+          π<sub>L</sub> = (P(Q) - C) × q<sub>L</sub> = (a - b(q<sub>L</sub> +
+          q<sub>F</sub>) - c) × q<sub>L</sub>
+        </div>
+
+        <h2>Follower’s Reaction Function</h2>
+        <p>
+          The follower chooses quantity q<sub>F</sub> to maximize its profit
+          given the leader’s output q<sub>L</sub>. The reaction function can be
+          derived from the first-order condition of the follower’s optimization
+          problem.
+        </p>
+
+        <h2>Real-World Relevance</h2>
+        <p>
+          Firms in industries like telecommunications or automobiles often act
+          sequentially, where a dominant leader firm sets output or prices first,
+          influencing smaller competitors.
+        </p>
+
+        <div class="quote-box">
+          "First-mover advantage is a powerful strategic tool in sequential
+          competition."
+        </div>
+      </div>
+      <div class="chart-container">
+        <canvas id="stackelbergChart"></canvas>
+        <div id="stackelberg3D"></div>
+      </div>
+    </div>
+
+    <footer>
+      Built by <strong>Ronit Bhaskar</strong> ·
+      <a href="mailto:ronitbhaskar04@gmail.com">ronitbhaskar04@gmail.com</a>
+    </footer>
+
+    <script>
+      const ctx = document.getElementById("stackelbergChart").getContext("2d");
+      const chart = new Chart(ctx, {
+        type: "line",
+        data: {
+          labels: Array.from({ length: 11 }, (_, i) => i),
+          datasets: [
+            {
+              label: "Leader Output (qL)",
+              data: [0, 1, 3, 5, 7, 9, 7, 5, 3, 1, 0],
+              borderColor: "#1db954",
+              backgroundColor: "rgba(29, 185, 84, 0.2)",
+              borderWidth: 2,
+              fill: true,
+              tension: 0.3,
+            },
+            {
+              label: "Follower Output (qF)",
+              data: [10, 8, 6, 4, 2, 0, 2, 4, 6, 8, 10],
+              borderColor: "#b91d73",
+              backgroundColor: "rgba(185, 29, 115, 0.2)",
+              borderWidth: 2,
+              fill: true,
+              tension: 0.3,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              labels: {
+                color: "#f0f0f0",
+                font: {
+                  size: 14,
+                },
+              },
+            },
+          },
+          scales: {
+            x: {
+              ticks: {
+                color: "#f0f0f0",
+              },
+              grid: {
+                color: "#333",
+              },
+            },
+            y: {
+              ticks: {
+                color: "#f0f0f0",
+              },
+              grid: {
+                color: "#333",
+              },
+            },
+          },
+        },
+      });
+
+      Plotly.newPlot(
+        "stackelberg3D",
+        [
+          {
+            type: "surface",
+            z: [
+              [2, 3, 4],
+              [3, 4, 5],
+              [4, 5, 6],
+            ],
+            colorscale: "Viridis",
+          },
+        ],
+        {
+          title: "Stackelberg Reaction Surface",
+          autosize: true,
+          margin: { l: 0, r: 0, b: 0, t: 30 },
+          scene: {
+            xaxis: { title: "qL" },
+            yaxis: { title: "qF" },
+            zaxis: { title: "Profit" },
+          },
+          paper_bgcolor: "#1c1c1c",
+          font: { color: "#f0f0f0" },
+        }
+      );
+    </script>
+  </body>
+</html>

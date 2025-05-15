@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cournot Duopoly Calculator | EconoPlay</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    /* Base styles */
+    * {
+      margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif;
+    }
+    body {
+      background-color: #f9f5f0; /* cream */
+      color: #000; /* black for text */
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+      scroll-behavior: smooth;
+    }
+    header {
+      margin-bottom: 2rem;
+      text-align: center;
+      color: #004d25; /* dark green */
+      animation: fadeIn 1.2s ease forwards;
+    }
+    header h1 {
+      font-size: 2.8rem;
+      font-weight: 800;
+      margin-bottom: 0.3rem;
+    }
+    header p {
+      font-size: 1.2rem;
+      max-width: 650px;
+      margin: 0 auto;
+      color: #222;
+      font-weight: 400;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px);}
+      to { opacity: 1; transform: translateY(0);}
+    }
+    main {
+      width: 100%;
+      max-width: 900px;
+      background-color: #ffffff;
+      border-radius: 15px;
+      padding: 2.5rem 3rem;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+      animation: fadeInUp 1s ease forwards;
+      color: #000;
+    }
+    @keyframes fadeInUp {
+      from {opacity: 0; transform: translateY(40px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+    section {
+      margin-bottom: 3rem;
+    }
+    h2 {
+      color: #004d25;
+      font-weight: 700;
+      font-size: 1.9rem;
+      margin-bottom: 1.2rem;
+      border-left: 5px solid #004d25;
+      padding-left: 0.75rem;
+    }
+    p {
+      font-size: 1.05rem;
+      line-height: 1.6;
+      margin-bottom: 1rem;
+      color: #222;
+    }
+    .input-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1.8rem;
+      max-width: 700px;
+      margin: 0 auto 2rem auto;
+    }
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: #004d25;
+    }
+    input[type=number] {
+      width: 100%;
+      padding: 0.6rem;
+      font-size: 1rem;
+      border-radius: 8px;
+      border: 2px solid #004d25;
+      background-color: #f9f5f0;
+      color: #004d25;
+      font-weight: 600;
+      text-align: center;
+      transition: border-color 0.3s ease;
+      cursor: text;
+    }
+    input[type=number]:hover,
+    input[type=number]:focus {
+      border-color: #007a3d;
+      outline: none;
+    }
+    button {
+      background-color: #004d25;
+      border: none;
+      color: #f9f5f0;
+      padding: 1rem 3rem;
+      font-size: 1.2rem;
+      border-radius: 35px;
+      cursor: pointer;
+      font-weight: 800;
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+      display: block;
+      margin: 0 auto 2rem auto;
+      box-shadow: 0 6px 15px rgba(0, 77, 37, 0.5);
+    }
+    button:hover {
+      background-color: #007a3d;
+      box-shadow: 0 8px 20px rgba(0, 122, 61, 0.7);
+    }
+    #results {
+      text-align: center;
+      font-size: 1.25rem;
+      color: #004d25;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      min-height: 3rem;
+    }
+    #chartContainer {
+      width: 100%;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+    canvas {
+      background-color: #f9f5f0;
+      border-radius: 15px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+    footer {
+      margin-top: 3rem;
+      padding: 1rem;
+      color: #666;
+      font-size: 0.9rem;
+      text-align: center;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Cournot Duopoly Calculator</h1>
+    <p>Input cost and demand parameters to see equilibrium quantities, profits, and reaction functions dynamically plotted.</p>
+  </header>
+
+  <main>
+    <section>
+      <h2>Input Market Parameters</h2>
+      <div class="input-grid">
+        <div>
+          <label for="aCost">Firm A Marginal Cost (c<sub>A</sub>)</label>
+          <input type="number" id="aCost" min="0" step="0.01" value="20" />
+        </div>
+        <div>
+          <label for="bCost">Firm B Marginal Cost (c<sub>B</sub>)</label>
+          <input type="number" id="bCost" min="0" step="0.01" value="15" />
+        </div>
+        <div>
+          <label for="priceIntercept">Price Intercept (a)</label>
+          <input type="number" id="priceIntercept" min="0" step="0.01" value="100" />
+        </div>
+        <div>
+          <label for="priceSlope">Price Slope (b)</label>
+          <input type="number" id="priceSlope" min="0.01" step="0.01" value="2" />
+        </div>
+      </div>
+      <button id="calcBtn">Calculate Equilibrium</button>
+    </section>
+
+    <section>
+      <h2>Results</h2>
+      <div id="results">Enter parameters and click Calculate.</div>
+      <div id="chartContainer">
+        <canvas id="reactionChart" aria-label="Reaction functions and equilibrium quantities chart"></canvas>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    Designed by Ronit Bhaskar
+  </footer>
+
+  <script>
+    const aCostInput = document.getElementById('aCost');
+    const bCostInput = document.getElementById('bCost');
+    const priceInterceptInput = document.getElementById('priceIntercept');
+    const priceSlopeInput = document.getElementById('priceSlope');
+    const calcBtn = document.getElementById('calcBtn');
+    const resultsDiv = document.getElementById('results');
+    const ctx = document.getElementById('reactionChart').getContext('2d');
+    let reactionChart;
+
+    function calculateEquilibrium(a, b, cA, cB) {
+      // Reaction functions:
+      // qA = (a - cA - b * qB) / (2b)
+      // qB = (a - cB - b * qA) / (2b)
+      // Solve simultaneously:
+      // qA* = (a - 2 cA + cB) / (3 b)
+      // qB* = (a - 2 cB + cA) / (3 b)
+
+      const qAStar = (a - 2 * cA + cB) / (3 * b);
+      const qBStar = (a - 2 * cB + cA) / (3 * b);
+
+      // Prices
+      const pStar = a - b * (qAStar + qBStar);
+
+      // Profits
+      const profitA = (pStar - cA) * qAStar;
+      const profitB = (pStar - cB) * qBStar;
+
+      return {
+        qAStar,
+        qBStar,
+        pStar,
+        profitA,
+        profitB
+      };
+    }
+
+    function generateReactionData(a, b, cA, cB, qMax=100) {
+      // Generate reaction functions data points for qB and qA from 0 to qMax
+      const points = 50;
+      const step = qMax / points;
+      let qBValues = [];
+      let reactionAValues = [];
+      let qAValues = [];
+      let reactionBValues = [];
+
+      for(let q = 0; q <= qMax; q += step) {
+        qBValues.push(q);
+        // qA reaction function
+        let rA = (a - cA - b * q) / (2 * b);
+        reactionAValues.push(rA >= 0 ? rA : 0);
+
+        qAValues.push(q);
+        // qB reaction function
+        let rB = (a - cB - b * q) / (2 * b);
+        reactionBValues.push(rB >= 0 ? rB : 0);
+      }
+
+      return { qBValues, reactionAValues, qAValues, reactionBValues };
+    }
+
+    function plotChart(data) {
+      if (reactionChart) reactionChart.destroy();
+
+      reactionChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: data.qBValues.map(q => q.toFixed(2)),
+          datasets: [
+            {
+              label: 'Firm A Reaction Function: qA = f(qB)',
+              data: data.reactionAValues,
+              borderColor: '#004d25',
+              backgroundColor: 'rgba(0,77,37,0.2)',
+              fill: true,
+              tension: 0.3,
+              pointRadius: 0,
+              borderWidth: 3
+            },
+            {
+              label: 'Firm B Reaction Function: qB = f(qA)',
+              data: data.reactionBValues,
+              borderColor: '#007a3d',
+              backgroundColor: 'rgba(0,122,61,0.2)',
+              fill: true,
+              tension: 0.3,
+              pointRadius: 0,
+              borderWidth: 3,
+              yAxisID: 'y1'
+            },
+            {
+              label: 'Equilibrium Quantity qA*',
+              data: Array(data.qBValues.length).fill(data.equilibrium.qAStar),
+              borderColor: '#2aa75f',
+              borderDash: [6, 6],
+              pointRadius: 0,
+              borderWidth: 2,
+              fill: false,
+            },
+            {
+              label: 'Equilibrium Quantity qB*',
+              data: Array(data.qBValues.length).fill(data.equilibrium.qBStar),
+              borderColor: '#66bb6a',
+              borderDash: [6, 6],
+              pointRadius: 0,
+              borderWidth: 2,
+              fill: false,
+              yAxisID: 'y1'
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          interaction: {
+            mode: 'nearest',
+            intersect: false
+          },
+          stacked: false,
+          plugins: {
+            legend: {
+              labels: { color: '#004d25', font: { weight: '700', size: 14 } }
+            },
+            tooltip: {
+              enabled: true,
+              backgroundColor: '#004d25',
+              titleColor: '#fff',
+              bodyColor: '#fff'
+            }
+          },
+          scales: {
+            x: {
+              title: {
+                display: true,
+                text: 'Quantity',
+                color: '#004d25',
+                font: { weight: '700', size: 16 }
+              },
+              ticks: { color: '#004d25' },
+              grid: { color: '#a8d0a8' }
+            },
+            y: {
+              type: 'linear',
+              display: true,
+              position: 'left',
+              title: {
+                display: true,
+                text: 'Firm A Quantity (qA)',
+                color: '#004d25',
+                font: { weight: '700', size: 16 }
+              },
+              ticks: { color: '#004d25' },
+              grid: { color: '#a8d0a8' },
+              min: 0,
+            },
+            y1: {
+              type: 'linear',
+              display: true,
+              position: 'right',
+              title: {
+                display: true,
+                text: 'Firm B Quantity (qB)',
+                color: '#004d25',
+                font: { weight: '700', size: 16 }
+              },
+              ticks: { color: '#004d25' },
+              grid: { drawOnChartArea: false },
+              min: 0,
+            }
+          }
+        }
+      });
+    }
+
+    function displayResults(equilibrium) {
+      return `
+        Equilibrium Quantities:<br>
+        Firm A: <strong>${equilibrium.qAStar.toFixed(2)}</strong><br>
+        Firm B: <strong>${equilibrium.qBStar.toFixed(2)}</strong><br>
+        <br>
+        Market Price: <strong>${equilibrium.pStar.toFixed(2)}</strong><br>
+        <br>
+        Profits:<br>
+        Firm A: <strong>${equilibrium.profitA.toFixed(2)}</strong><br>
+        Firm B: <strong>${equilibrium.profitB.toFixed(2)}</strong>
+      `;
+    }
+
+    function runCalculation() {
+      const cA = parseFloat(aCostInput.value);
+      const cB = parseFloat(bCostInput.value);
+      const a = parseFloat(priceInterceptInput.value);
+      const b = parseFloat(priceSlopeInput.value);
+
+      if (isNaN(cA) || isNaN(cB) || isNaN(a) || isNaN(b) || b <= 0) {
+        resultsDiv.innerHTML = "<span style='color:red;'>Please enter valid positive numbers. Price slope (b) must be &gt; 0.</span>";
+        if(reactionChart) reactionChart.destroy();
+        return;
+      }
+
+      const equilibrium = calculateEquilibrium(a, b, cA, cB);
+      resultsDiv.innerHTML = displayResults(equilibrium);
+
+      const data = generateReactionData(a, b, cA, cB, Math.max(equilibrium.qAStar, equilibrium.qBStar) * 2);
+      data.equilibrium = equilibrium;
+      plotChart(data);
+    }
+
+    calcBtn.addEventListener('click', runCalculation);
+
+    // Initialize default
+    window.onload = () => {
+      runCalculation();
+    };
+  </script>
+
+</body>
+</html>

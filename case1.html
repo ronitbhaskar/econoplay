@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Cournot Duopoly Case Study | EconoPlay</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.plot.ly/plotly-2.20.0.min.js"></script>
+<style>
+  * {
+    margin: 0; padding: 0; box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background-color: #0a0a0a;
+    color: #f0f0f0;
+    padding: 40px;
+    line-height: 1.6;
+  }
+
+  h1 {
+    font-weight: 800;
+    font-size: 2.5rem;
+    margin-bottom: 25px;
+  }
+
+  .container {
+    display: flex;
+    gap: 40px;
+    max-width: 1200px;
+    margin: auto;
+    flex-wrap: wrap;
+  }
+
+  .content {
+    flex: 1 1 500px;
+    min-width: 300px;
+    max-width: 600px;
+  }
+
+  .content h2 {
+    font-weight: 600;
+    margin: 20px 0 10px;
+    font-size: 1.5rem;
+  }
+
+  .content p {
+    margin-bottom: 20px;
+    color: #ccc;
+  }
+
+  .equation {
+    font-size: 1rem;
+    font-weight: 600;
+    background-color: #1b1b1b;
+    border-left: 4px solid #1db954;
+    padding: 15px 20px;
+    margin: 20px 0;
+    white-space: normal;
+    word-wrap: break-word;
+  }
+
+  .graphs-wrapper {
+    flex: 1 1 450px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    min-width: 300px;
+    max-width: 600px;
+  }
+
+  .chart-box {
+    background-color: #1c1c1c;
+    border-radius: 10px;
+    padding: 15px 20px;
+    box-shadow: 0 0 15px #111;
+  }
+
+  #duopolyChart {
+    width: 100% !important;
+    height: 350px !important;
+  }
+
+  #duopoly3D {
+    width: 100% !important;
+    height: 350px !important;
+  }
+
+  .quote-box {
+    margin-top: 40px;
+    background-color: #1b1b1b;
+    border-left: 4px solid #1db954;
+    padding: 20px;
+    font-style: italic;
+    font-size: 1.2rem;
+    color: #ddd;
+  }
+
+  footer {
+    margin-top: 60px;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #888;
+    border-top: 1px solid #222;
+    padding-top: 20px;
+  }
+
+  footer a {
+    color: #1db954;
+    text-decoration: none;
+  }
+</style>
+</head>
+<body>
+<h1>Case Study: Cournot Duopoly – Boeing vs Airbus</h1>
+<div class="container">
+  <div class="content">
+    <h2>Strategic Competition Overview</h2>
+    <p>
+      In this case study, we examine Boeing and Airbus, two dominant players
+      in the global aircraft manufacturing industry. Both firms decide how
+      many units (airplanes) to produce, knowing that their output influences
+      market price. This interaction forms the basis of the Cournot model in
+      oligopoly economics.
+    </p>
+
+    <h2>Market Assumptions</h2>
+    <p>
+      The market demand is linear, and marginal costs are constant. Each firm
+      decides simultaneously on quantity, and the price is determined by total
+      quantity in the market. Competitive pressures, strategic
+      interdependence, and reaction functions are at the core of this analysis.
+    </p>
+
+    <h2>Profit Equation (Firm A):</h2>
+    <div class="equation">
+      π<sub>A</sub> = (P(Q) - C) × q<sub>A</sub> = (a - b(q<sub>A</sub> + q<sub>B</sub>) - c) × q<sub>A</sub>
+    </div>
+
+    <h2>Deeper Analysis</h2>
+    <p>
+      The Cournot model is a fundamental concept used to model duopolies where
+      firms choose output quantities rather than prices. By using reaction
+      functions, each firm determines its best output level in response to the
+      other's decision. The Nash equilibrium in this model gives us a point
+      where neither firm has anything to gain by changing only its own output.
+    </p>
+
+    <h2>Real-World Insight</h2>
+    <p>
+      Historically, both firms have used production adjustments and pricing
+      strategies to edge each other out in different markets, such as Asia and
+      the EU. The Cournot model is an abstraction of these strategic decisions.
+      Government regulations, subsidies, and technological advancements
+      further influence their competitive strategies.
+    </p>
+
+    <div class="quote-box">
+      "In the complex sky of competition, Cournot equilibrium helps us navigate
+      the balance of strategic interdependence."
+    </div>
+  </div>
+
+  <div class="graphs-wrapper">
+    <div class="chart-box">
+      <canvas id="duopolyChart"></canvas>
+    </div>
+    <div class="chart-box">
+      <div id="duopoly3D"></div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  Built by <strong>Ronit Bhaskar</strong> ·
+  <a href="mailto:ronitbhaskar04@gmail.com">ronitbhaskar04@gmail.com</a>
+</footer>
+
+<script>
+  // Chart.js line chart for firm outputs
+  const ctx = document.getElementById('duopolyChart').getContext('2d');
+  const chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: Array.from({ length: 11 }, (_, i) => i),
+      datasets: [
+        {
+          label: 'Firm A Output (qA)',
+          data: [0, 2, 4, 6, 8, 10, 8, 6, 4, 2, 0],
+          borderColor: '#1db954',
+          backgroundColor: 'rgba(29, 185, 84, 0.2)',
+          borderWidth: 2,
+          fill: true,
+          tension: 0.3,
+        },
+        {
+          label: 'Firm B Output (qB)',
+          data: [10, 8, 6, 4, 2, 0, 2, 4, 6, 8, 10],
+          borderColor: '#b91d73',
+          backgroundColor: 'rgba(185, 29, 115, 0.2)',
+          borderWidth: 2,
+          fill: true,
+          tension: 0.3,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          labels: {
+            color: '#f0f0f0',
+            font: {
+              size: 14,
+            },
+          },
+        },
+      },
+      scales: {
+        x: {
+          ticks: {
+            color: '#f0f0f0',
+          },
+          grid: {
+            color: '#333',
+          },
+        },
+        y: {
+          ticks: {
+            color: '#f0f0f0',
+          },
+          grid: {
+            color: '#333',
+          },
+        },
+      },
+    },
+  });
+
+  // Plotly 3D surface plot for reaction surface
+  Plotly.newPlot(
+    'duopoly3D',
+    [
+      {
+        type: 'surface',
+        z: [
+          [1, 2, 3],
+          [2, 3, 4],
+          [3, 4, 5],
+        ],
+        colorscale: 'Viridis',
+      },
+    ],
+    {
+      title: 'Cournot Reaction Surface',
+      autosize: true,
+      margin: { l: 0, r: 0, b: 0, t: 30 },
+      scene: {
+        xaxis: { title: 'qA' },
+        yaxis: { title: 'qB' },
+        zaxis: { title: 'Profit' },
+      },
+      paper_bgcolor: '#1c1c1c',
+      font: { color: '#f0f0f0' },
+    }
+  );
+</script>
+</body>
+</html>
