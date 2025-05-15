@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Advanced Prisoner's Dilemma Simulator | EconoPlay</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    /* Base styles */
+    * {
+      margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif;
+    }
+    body {
+      background-color: #f9f5f0; /* cream */
+      color: #000; /* black for subtext */
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+      scroll-behavior: smooth;
+    }
+    header {
+      margin-bottom: 2rem;
+      text-align: center;
+      animation: fadeIn 1.2s ease forwards;
+      color: #004d25; /* dark green */
+    }
+    header h1 {
+      font-size: 2.8rem;
+      font-weight: 800;
+      margin-bottom: 0.3rem;
+    }
+    header p {
+      font-size: 1.2rem;
+      max-width: 650px;
+      margin: 0 auto;
+      color: #222;
+      font-weight: 400;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px);}
+      to { opacity: 1; transform: translateY(0);}
+    }
+    main {
+      width: 100%;
+      max-width: 900px;
+      background-color: #ffffff;
+      border-radius: 15px;
+      padding: 2.5rem 3rem;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+      animation: fadeInUp 1s ease forwards;
+      color: #000;
+    }
+    @keyframes fadeInUp {
+      from {opacity: 0; transform: translateY(40px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+    section {
+      margin-bottom: 3rem;
+    }
+    h2 {
+      color: #004d25;
+      font-weight: 700;
+      font-size: 1.9rem;
+      margin-bottom: 1.2rem;
+      border-left: 5px solid #004d25;
+      padding-left: 0.75rem;
+    }
+    p {
+      font-size: 1.05rem;
+      line-height: 1.6;
+      margin-bottom: 1rem;
+      color: #222;
+    }
+    .strategy-selectors {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 2.5rem;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+    .player-box {
+      background-color: #e5f0e8; /* very light green */
+      border: 2px solid #004d25;
+      border-radius: 12px;
+      padding: 1.2rem 2rem;
+      width: 45%;
+      text-align: center;
+    }
+    .player-box h3 {
+      color: #004d25;
+      margin-bottom: 1rem;
+      font-weight: 700;
+      font-size: 1.4rem;
+    }
+    select, input[type=number] {
+      width: 100%;
+      padding: 0.6rem;
+      font-size: 1rem;
+      border-radius: 8px;
+      border: 2px solid #004d25;
+      background-color: #f9f5f0;
+      color: #004d25;
+      cursor: pointer;
+      transition: border-color 0.3s ease;
+      font-weight: 600;
+      text-align: center;
+    }
+    select:hover, select:focus, input[type=number]:hover, input[type=number]:focus {
+      border-color: #007a3d;
+      outline: none;
+    }
+    button {
+      background-color: #004d25;
+      border: none;
+      color: #f9f5f0;
+      padding: 1rem 2.5rem;
+      font-size: 1.2rem;
+      border-radius: 35px;
+      cursor: pointer;
+      font-weight: 800;
+      transition: background-color 0.3s ease;
+      display: block;
+      margin: 0 auto 2rem auto;
+      box-shadow: 0 6px 15px rgba(0, 77, 37, 0.5);
+    }
+    button:hover {
+      background-color: #007a3d;
+      box-shadow: 0 8px 20px rgba(0, 122, 61, 0.7);
+    }
+    #result {
+      text-align: center;
+      font-size: 1.3rem;
+      color: #004d25;
+      font-weight: 700;
+      min-height: 3rem;
+      margin-bottom: 1.5rem;
+    }
+    #payoffChartContainer {
+      width: 100%;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+    canvas {
+      background-color: #f9f5f0;
+      border-radius: 15px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+    footer {
+      margin-top: 3rem;
+      padding: 1rem;
+      color: #666;
+      font-size: 0.9rem;
+      text-align: center;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Advanced Prisoner's Dilemma Simulator</h1>
+    <p>Explore extended strategies and customize payoffs to see the rich strategic landscape and Nash equilibria.</p>
+  </header>
+
+  <main>
+    <section>
+      <h2>Player Strategy Selection</h2>
+      <div class="strategy-selectors">
+        <div class="player-box">
+          <h3>Player A Strategy</h3>
+          <select id="playerAStrategy" aria-label="Select Player A Strategy">
+            <option value="cooperate">Cooperate</option>
+            <option value="defect">Defect</option>
+            <option value="titfortat">Tit-for-Tat</option>
+          </select>
+        </div>
+        <div class="player-box">
+          <h3>Player B Strategy</h3>
+          <select id="playerBStrategy" aria-label="Select Player B Strategy">
+            <option value="cooperate">Cooperate</option>
+            <option value="defect">Defect</option>
+            <option value="titfortat">Tit-for-Tat</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Customize Payoffs</h2>
+      <p>Adjust the payoff values for each outcome (these reflect Player A's and Player B's payoffs respectively).</p>
+      <div style="display:flex; flex-wrap: wrap; gap: 1.5rem; max-width: 700px; margin: 0 auto;">
+        <div style="flex:1; min-width: 140px; text-align:center;">
+          <label for="payoffCC" style="font-weight:600; color:#004d25;">(Cooperate, Cooperate) Payoff A</label>
+          <input type="number" id="payoffCC_A" value="3" step="0.1" />
+          <label for="payoffCC" style="font-weight:600; color:#004d25;">Payoff B</label>
+          <input type="number" id="payoffCC_B" value="3" step="0.1" />
+        </div>
+        <div style="flex:1; min-width: 140px; text-align:center;">
+          <label for="payoffCD" style="font-weight:600; color:#004d25;">(Cooperate, Defect) Payoff A</label>
+          <input type="number" id="payoffCD_A" value="0" step="0.1" />
+          <label for="payoffCD" style="font-weight:600; color:#004d25;">Payoff B</label>
+          <input type="number" id="payoffCD_B" value="5" step="0.1" />
+        </div>
+        <div style="flex:1; min-width: 140px; text-align:center;">
+          <label for="payoffDC" style="font-weight:600; color:#004d25;">(Defect, Cooperate) Payoff A</label>
+          <input type="number" id="payoffDC_A" value="5" step="0.1" />
+          <label for="payoffDC" style="font-weight:600; color:#004d25;">Payoff B</label>
+          <input type="number" id="payoffDC_B" value="0" step="0.1" />
+        </div>
+        <div style="flex:1; min-width: 140px; text-align:center;">
+          <label for="payoffDD" style="font-weight:600; color:#004d25;">(Defect, Defect) Payoff A</label>
+          <input type="number" id="payoffDD_A" value="1" step="0.1" />
+          <label for="payoffDD" style="font-weight:600; color:#004d25;">Payoff B</label>
+          <input type="number" id="payoffDD_B" value="1" step="0.1" />
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <button id="simulateBtn" aria-label="Simulate strategies" style="margin-bottom:2rem;">Simulate</button>
+      <div id="result" aria-live="polite" style="min-height:3rem; text-align:center; font-weight:700; color:#004d25; font-size:1.3rem;"></div>
+      <div id="payoffChartContainer">
+        <canvas id="payoffChart" aria-label="Payoff matrix chart"></canvas>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    Designed by Ronit Bhaskar
+  </footer>
+
+  <script>
+    const playerAStrategySelect = document.getElementById('playerAStrategy');
+    const playerBStrategySelect = document.getElementById('playerBStrategy');
+    const simulateBtn = document.getElementById('simulateBtn');
+    const resultDiv = document.getElementById('result');
+    const ctx = document.getElementById('payoffChart').getContext('2d');
+
+    // Initialize payoffs from inputs
+    function getPayoffMatrixFromInputs() {
+      return {
+        cooperate: {
+          cooperate: [
+            parseFloat(document.getElementById('payoffCC_A').value),
+            parseFloat(document.getElementById('payoffCC_B').value)
+          ],
+          defect: [
+            parseFloat(document.getElementById('payoffCD_A').value),
+            parseFloat(document.getElementById('payoffCD_B').value)
+          ]
+        },
+        defect: {
+          cooperate: [
+            parseFloat(document.getElementById('payoffDC_A').value),
+            parseFloat(document.getElementById('payoffDC_B').value)
+          ],
+          defect: [
+            parseFloat(document.getElementById('payoffDD_A').value),
+            parseFloat(document.getElementById('payoffDD_B').value)
+          ]
+        }
+      };
+    }
+
+    // Extended strategies: tit-for-tat treated as conditional, show payoff approximated as average
+    function calculatePayoffs(aStrategy, bStrategy, payoffMatrix) {
+      // For simplicity, Tit-for-Tat cooperates first then mirrors opponent's previous move
+      // We'll approximate average payoffs over repeated games (e.g. 5 rounds)
+      if (aStrategy === 'titfortat' || bStrategy === 'titfortat') {
+        // Simulate 5 rounds
+        let rounds = 5;
+        let aHistory = [];
+        let bHistory = [];
+        // First move cooperate for tit-for-tat
+        let aMove = aStrategy === 'titfortat' ? 'cooperate' : aStrategy;
+        let bMove = bStrategy === 'titfortat' ? 'cooperate' : bStrategy;
+
+        let totalA = 0;
+        let totalB = 0;
+
+        for(let i=0; i < rounds; i++) {
+          const payoffs = payoffMatrix[aMove][bMove];
+          totalA += payoffs[0];
+          totalB += payoffs[1];
+          aHistory.push(aMove);
+          bHistory.push(bMove);
+          // Next moves if tit-for-tat: mirror opponent's previous move
+          if(aStrategy === 'titfortat') aMove = bHistory[i];
+          if(bStrategy === 'titfortat') bMove = aHistory[i];
+        }
+
+        return [totalA / rounds, totalB / rounds];
+      } else {
+        // Simple single round payoff
+        return payoffMatrix[aStrategy][bStrategy];
+      }
+    }
+
+    let payoffChart;
+
+    function createPayoffChart(payoffMatrix, selectedA, selectedB) {
+      const labels = ['(C, C)', '(C, D)', '(D, C)', '(D, D)'];
+      const dataPlayerA = [
+        payoffMatrix.cooperate.cooperate[0],
+        payoffMatrix.cooperate.defect[0],
+        payoffMatrix.defect.cooperate[0],
+        payoffMatrix.defect.defect[0]
+      ];
+      const dataPlayerB = [
+        payoffMatrix.cooperate.cooperate[1],
+        payoffMatrix.cooperate.defect[1],
+        payoffMatrix.defect.cooperate[1],
+        payoffMatrix.defect.defect[1]
+      ];
+
+      const backgroundColorsA = ['#004d25', '#004d25', '#004d25', '#004d25'];
+      const backgroundColorsB = ['#007a3d', '#007a3d', '#007a3d', '#007a3d'];
+
+      // Highlight selected combo
+      const selectedIndex = labels.indexOf(`(${selectedA.charAt(0).toUpperCase()}, ${selectedB.charAt(0).toUpperCase()})`);
+      if (selectedIndex !== -1) {
+        backgroundColorsA[selectedIndex] = '#66bb6a';
+        backgroundColorsB[selectedIndex] = '#4caf50';
+      }
+
+      if (payoffChart) payoffChart.destroy();
+
+      payoffChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'Player A Payoff',
+              data: dataPlayerA,
+              backgroundColor: backgroundColorsA,
+              borderRadius: 6,
+              barPercentage: 0.5,
+            },
+            {
+              label: 'Player B Payoff',
+              data: dataPlayerB,
+              backgroundColor: backgroundColorsB,
+              borderRadius: 6,
+              barPercentage: 0.5,
+            },
+          ]
+        },
+        options: {
+          responsive: true,
+          interaction: {
+            mode: 'index',
+            intersect: false,
+          },
+          plugins: {
+            legend: {
+              labels: {
+                color: '#004d25',
+                font: { size: 14, weight: '700' },
+              }
+            },
+            tooltip: {
+              enabled: true,
+              backgroundColor: '#004d25',
+              titleColor: '#fff',
+              bodyColor: '#fff'
+            },
+          },
+          scales: {
+            x: {
+              ticks: {
+                color: '#004d25',
+                font: { size: 14, weight: '700' }
+              },
+              grid: { display: false }
+            },
+            y: {
+              beginAtZero: true,
+              ticks: {
+                color: '#004d25',
+                font: { size: 14, weight: '700' }
+              },
+              grid: { color: '#a0d9a7' }
+            }
+          }
+        }
+      });
+    }
+
+    function capitalize(str) {
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+    function displayOutcome(aStrategy, bStrategy, payoffs) {
+      return `
+        Player A chose <strong>${capitalize(aStrategy)}</strong>, Player B chose <strong>${capitalize(bStrategy)}</strong>.<br>
+        <span style="color:#004d25;">Expected average payoffs:</span><br>
+        Player A: <strong>${payoffs[0].toFixed(2)}</strong>, Player B: <strong>${payoffs[1].toFixed(2)}</strong>.
+      `;
+    }
+
+    function simulate() {
+      const aStrategy = playerAStrategySelect.value;
+      const bStrategy = playerBStrategySelect.value;
+      const payoffMatrix = getPayoffMatrixFromInputs();
+
+      const payoffs = calculatePayoffs(aStrategy, bStrategy, payoffMatrix);
+
+      resultDiv.innerHTML = displayOutcome(aStrategy, bStrategy, payoffs);
+      createPayoffChart(payoffMatrix, aStrategy, bStrategy);
+    }
+
+    simulateBtn.addEventListener('click', simulate);
+
+    // Initialize on load
+    window.onload = () => {
+      const initialPayoffMatrix = getPayoffMatrixFromInputs();
+      createPayoffChart(initialPayoffMatrix, 'cooperate', 'cooperate');
+      resultDiv.innerHTML = 'Select strategies and customize payoffs, then click Simulate.';
+    };
+  </script>
+</body>
+</html>
